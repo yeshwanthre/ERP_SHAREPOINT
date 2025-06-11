@@ -17,7 +17,12 @@ col1, col2 = st.columns([0.15, 0.85])
 with col1:
     st.image("kenai.png", width=100)
 with col2:
-    st.markdown("<h1 style='display: flex; align-items: center;'>Oracle ConvoPilot</h1>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style='display: flex; flex-direction: column; align-items: flex-start;'>
+            <h1 style='margin-bottom: 0;'>Share<span style='color: #0072BC;'>Assist</span></h1>
+            <span style='font-size: 1rem; color: #ED1C24; margin-top: -1.5rem; margin-left: 7rem; font-weight: bold; font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;'>Where Sharing Meets Precision</span>
+        </div>
+    """, unsafe_allow_html=True) # Note: Changed margin-left for the span, and added a span inside h1
 
 # Initialize session state
 if "messages" not in st.session_state:
@@ -60,21 +65,18 @@ else:
     def speak_text(text): pass
     def get_voice_input(): return None
 
-# Auto-index docs on first load
-if not st.session_state.indexed:
-    if not os.path.exists("./vector_index"):
-        with st.spinner("🗓 Indexing documents from SharePoint for first use..."):
-            try:
-                index_documents()
-                st.session_state.indexed = True
-                st.success("✅ Document index ready!")
-            except Exception as e:
-                st.error(f"❌ Failed to index documents: {e}")
-    else:
-        st.session_state.indexed = True
+# Re-index section with a button
+if st.button("🔁"):
+    with st.spinner("🔄 Re-indexing documents..."):
+        try:
+            index_documents()
+            st.session_state.indexed = True
+            st.success("✅ Document index updated!")
+        except Exception as e:
+            st.error(f"❌ Failed to index documents: {e}")
 
 # Input section (always at the top)
-input_container = st.container() 
+input_container = st.container()
 with input_container:
     input_col, mic_col = st.columns([0.9, 0.1])
     question = None
